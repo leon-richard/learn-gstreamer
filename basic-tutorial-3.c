@@ -7,6 +7,9 @@ typedef struct _CustomData {
   GstElement *convert;
   GstElement *resample;
   GstElement *sink;
+  GstElement *v_source;
+  GstElement *v_convert;
+  GstElement *v_sink;
 } CustomData;
 
 /* Handler for the pad-added signal */
@@ -27,6 +30,9 @@ int main(int argc, char *argv[]) {
   data.convert = gst_element_factory_make ("audioconvert", "convert");
   data.resample = gst_element_factory_make ("audioresample", "resample");
   data.sink = gst_element_factory_make ("autoaudiosink", "sink");
+  data.v_source = gst_element_factory_make ("videotestsrc", "v_source");
+  data.v_convert = gst_element_factory_make("videoconvert", "v_convert");
+  data.v_sink = gst_element_factory_make("autovideosink", "v_sink");
 
   /* Create the empty pipeline */
   data.pipeline = gst_pipeline_new ("test-pipeline");
@@ -40,6 +46,14 @@ int main(int argc, char *argv[]) {
    * point. We will do it later. */
   gst_bin_add_many (GST_BIN (data.pipeline), data.source, data.convert, data.resample, data.sink, NULL);
   if (!gst_element_link_many (data.convert, data.resample, data.sink, NULL)) {
+    g_printerr ("Elements could not be linked.\n");
+    gst_object_unref (data.pipeline);
+    return -1;
+  }
+  gst_bin_add (GST_BIN (data.pipeline), data.v_source);
+  gst_bin_add (GST_BIN (data.pipeline), data.v_convert);
+  gst_bin_add (GST_BIN (data.pipeline), data.v_sink);
+  if (!gst_element_link_many (data.v_source, data.v_convert, data.v_sink, NULL)) {
     g_printerr ("Elements could not be linked.\n");
     gst_object_unref (data.pipeline);
     return -1;
