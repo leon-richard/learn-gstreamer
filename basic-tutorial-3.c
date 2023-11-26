@@ -104,6 +104,11 @@ int main(int argc, char *argv[]) {
             gst_message_parse_state_changed (msg, &old_state, &new_state, &pending_state);
             g_print ("Pipeline state changed from %s to %s:\n",
                 gst_element_state_get_name (old_state), gst_element_state_get_name (new_state));
+            
+            // 在流水线运行之前调用宏生成 DOT 文件
+            gchar dot_file_name[128];
+            g_snprintf(dot_file_name, sizeof(dot_file_name), "pipeline-%s-%s", gst_element_state_get_name (old_state), gst_element_state_get_name (new_state));
+            GST_DEBUG_BIN_TO_DOT_FILE_WITH_TS(GST_BIN(data.pipeline), GST_DEBUG_GRAPH_SHOW_ALL, dot_file_name);
           }
           break;
         default:

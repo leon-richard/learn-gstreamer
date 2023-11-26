@@ -29,6 +29,9 @@ tutorial_main (int argc, char *argv[])
       gst_bus_timed_pop_filtered (bus, GST_CLOCK_TIME_NONE,
       GST_MESSAGE_ERROR | GST_MESSAGE_EOS);
 
+  // 在流水线运行之前调用宏生成 DOT 文件
+  GST_DEBUG_BIN_TO_DOT_FILE_WITH_TS(GST_BIN(pipeline), GST_DEBUG_GRAPH_SHOW_ALL, "pipeline");
+
   /* See next tutorial for proper error message handling/parsing */
   if (GST_MESSAGE_TYPE (msg) == GST_MESSAGE_ERROR) {
     g_error ("An error occurred! Re-run with the GST_DEBUG=*:WARN environment "
